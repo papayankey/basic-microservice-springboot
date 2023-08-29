@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/validation")
+@RequestMapping("/verify")
 public class ValidationController {
     private final Map<Integer, String> validatedCustomers = new HashMap<>();
 

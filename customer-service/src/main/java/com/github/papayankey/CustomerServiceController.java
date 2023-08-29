@@ -16,15 +16,15 @@ public class CustomerServiceController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @GetMapping("/validate/{id}")
+    @GetMapping("/verify/{id}")
     public ResponseEntity<CustomerResponse> checkValidation(@PathVariable(name = "id") String id) {
-        boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject("http://customer-validation-service/validation/" + id, Boolean.class));
+        boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject("http://customer-validation-service/verify/" + id, Boolean.class));
         if (!isValidated) {
-            var data = new CustomerResponse("customer with id %s is not validated".formatted(id),
+            var data = new CustomerResponse("customer %s is not validated".formatted(id),
                     null, HttpStatus.BAD_REQUEST, LocalDateTime.now());
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-        var data = new CustomerResponse("customer with id %s is validated".formatted(id),
+        var data = new CustomerResponse("customer %s is validated".formatted(id),
                 null, HttpStatus.OK, LocalDateTime.now());
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
@@ -54,7 +54,7 @@ public class CustomerServiceController {
         var customer = restTemplate.postForObject("http://customer-info-service/info", customerRequest, Customer.class);
         if (Objects.nonNull(customer)) {
             var validationRequest = new ValidationRequest(customer.id(), "%s %s".formatted(customer.firstName(), customer.lastName()));
-            restTemplate.postForObject("http://customer-validation-service/validation", validationRequest, Void.class);
+            restTemplate.postForObject("http://customer-validation-service/verify", validationRequest, Void.class);
             var data = new CustomerResponse(null, "customer registration successful", HttpStatus.CREATED, LocalDateTime.now());
             return new ResponseEntity<>(data, HttpStatus.CREATED);
         }

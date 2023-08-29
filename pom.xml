@@ -22,6 +22,7 @@
         <module>customer-validation-service</module>
         <module>customer-info-service</module>
         <module>service-discovery</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>
