@@ -14,18 +14,18 @@ spring:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
-  cloud:
-    gateway:
-      routes:
-        - id: route-one
-          uri: lb://customer-service
-          predicates:
-            - Path=/verify/{id}
-          filters:
-            - SetPath=/customers/verify/{id}
-        - id: route-two
-          uri: lb://customer-service
-          predicates:
-            - Path=/customers/verify/{id}
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: route-one
+#          uri: lb://customer-service
+#          predicates:
+#            - Path=/verify/{id}
+#          filters:
+#            - SetPath=/customers/verify/{id}
+#        - id: route-two
+#          uri: lb://customer-service
+#          predicates:
+#            - Path=/customers/verify/{id}
 
 
