@@ -7,17 +7,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class GatewayRoutesConfiguration {
+    private final String CUSTOMER_SERVICE_PATH = "lb://customer-service";
     @Bean
     RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("verify-customer", p -> p.path("/verify/**")
                         .filters(f -> f.rewritePath("/verify/(?<name>.*)", "/customers/verify/${name}"))
-                        .uri("lb://customer-service"))
+                        .uri(CUSTOMER_SERVICE_PATH))
                 .route("verify-customer", p -> p.path("/customers/**")
-                        .uri("lb://customer-service"))
+                        .uri(CUSTOMER_SERVICE_PATH))
                 .route("get-customer", p -> p.path("/info/**")
                         .filters(f -> f.rewritePath("/info/(?<segment>.*)", "/customers/info/${segment}"))
-                        .uri("lb://customer-service"))
+                        .uri(CUSTOMER_SERVICE_PATH))
 
                 // verify customer
 //                .route("verify-customer", p -> p.path("/verify/{id}")
