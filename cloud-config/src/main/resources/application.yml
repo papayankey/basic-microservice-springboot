@@ -3,13 +3,28 @@ server:
 
 spring:
   profiles:
-    active: native
+    active: default
 
   application:
     name: cloud-config
 
+  # Fetch configuration from local file system
+  #  cloud:
+  #    config:
+  #      server:
+  #        native:
+  #          searchLocations: file:///${user.home}/configrepo
+
+  # Fetch configuration from local git
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          uri: file:///${user.home}/configrepo
+
+  # Fetch configuration from remote git
   cloud:
     config:
       server:
-        native:
-          searchLocations: file:///${user.home}/configrepo
+        git:
+          uri: https://github.com/papayankey/configrepo
