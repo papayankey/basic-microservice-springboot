@@ -4,8 +4,6 @@ server:
 spring:
   application:
     name: api-gateway
-  config:
-    import: "optional:configserver:"
 
 # these configurations are now stored in the config server
 

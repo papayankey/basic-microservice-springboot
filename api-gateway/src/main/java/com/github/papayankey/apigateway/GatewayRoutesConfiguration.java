@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayRoutesConfiguration {
     private final String CUSTOMER_SERVICE_PATH = "lb://customer-service";
+
     @Bean
     RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
@@ -18,6 +19,8 @@ public class GatewayRoutesConfiguration {
                         .uri(CUSTOMER_SERVICE_PATH))
                 .route("get-customer", p -> p.path("/info/**")
                         .filters(f -> f.rewritePath("/info/(?<segment>.*)", "/customers/info/${segment}"))
+                        .uri(CUSTOMER_SERVICE_PATH))
+                .route("refresh-config-properties", p -> p.path("/actuator/refresh")
                         .uri(CUSTOMER_SERVICE_PATH))
 
                 // verify customer

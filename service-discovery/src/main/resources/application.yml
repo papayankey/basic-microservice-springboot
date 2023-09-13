@@ -4,14 +4,13 @@ server:
 spring:
   application:
     name: service-discovery
-  config:
-    import: "optional:configserver:"
 
-#     these configurations are now stored in the config server
 
-# eureka:
-#   instance:
-#     hostname: localhost
-#   client:
-#     register-with-eureka: false
-#     fetch-registry: false
+  #     these configurations are now stored in the config server
+
+  eureka:
+    instance:
+      hostname: localhost
+    client:
+      register-with-eureka: false
+      fetch-registry: false

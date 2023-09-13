@@ -1,6 +1,8 @@
 package com.github.papayankey;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,15 +12,22 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+@RefreshScope
 @RestController
 @RequestMapping("/customers")
 public class CustomerServiceController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Value("${services.customer-validation}")
+    private String validationService;
+
+    @Value("${services.customer-info}")
+    private String infoService;
+
     @GetMapping("/verify/{id}")
     public ResponseEntity<CustomerResponse> checkValidation(@PathVariable(name = "id") String id) {
-        boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject("http://customer-validation-service/verify/" + id, Boolean.class));
+        boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject(validationService + id, Boolean.class));
         if (!isValidated) {
             var data = new CustomerResponse("customer %s is not validated".formatted(id),
                     null, HttpStatus.BAD_REQUEST, LocalDateTime.now());
@@ -31,7 +40,7 @@ public class CustomerServiceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getCustomer(@PathVariable(name = "id") String id) {
-        var optionalCustomer = restTemplate.getForObject("http://customer-info-service/info/" + id, Optional.class);
+        var optionalCustomer = restTemplate.getForObject(infoService + id, Optional.class);
         if (Objects.nonNull(optionalCustomer) && optionalCustomer.isPresent()) {
             var data = new CustomerResponse(optionalCustomer.get(), null, HttpStatus.OK, LocalDateTime.now());
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -42,7 +51,7 @@ public class CustomerServiceController {
 
     @GetMapping
     public ResponseEntity<CustomerResponse> getCustomers() {
-        var customers = restTemplate.getForObject("http://customer-info-service/info", Customers.class);
+        var customers = restTemplate.getForObject(infoService, Customers.class);
         if (Objects.nonNull(customers) && customers.data().isEmpty()) {
             return new ResponseEntity<>(new CustomerResponse(null, "no customers registered yet", HttpStatus.OK, LocalDateTime.now()), HttpStatus.OK);
         }
@@ -51,10 +60,10 @@ public class CustomerServiceController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> addCustomer(@RequestBody CustomerRequest customerRequest) {
-        var customer = restTemplate.postForObject("http://customer-info-service/info", customerRequest, Customer.class);
+        var customer = restTemplate.postForObject(infoService, customerRequest, Customer.class);
         if (Objects.nonNull(customer)) {
             var validationRequest = new ValidationRequest(customer.id(), "%s %s".formatted(customer.firstName(), customer.lastName()));
-            restTemplate.postForObject("http://customer-validation-service/verify", validationRequest, Void.class);
+            restTemplate.postForObject(validationService, validationRequest, Void.class);
             var data = new CustomerResponse(null, "customer registration successful", HttpStatus.CREATED, LocalDateTime.now());
             return new ResponseEntity<>(data, HttpStatus.CREATED);
         }

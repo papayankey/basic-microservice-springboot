@@ -6,3 +6,9 @@ spring:
     name: customer-service
   config:
     import: "optional:configserver:"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
