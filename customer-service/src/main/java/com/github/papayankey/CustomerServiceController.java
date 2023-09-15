@@ -1,5 +1,7 @@
 package com.github.papayankey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -16,6 +18,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/customers")
 public class CustomerServiceController {
+    Logger logger = LoggerFactory.getLogger(CustomerServiceController.class);
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -27,6 +31,7 @@ public class CustomerServiceController {
 
     @GetMapping("/verify/{id}")
     public ResponseEntity<CustomerResponse> checkValidation(@PathVariable(name = "id") String id) {
+        logger.info("Making a request to validation info service with id: {}", id);
         boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject(validationService + id, Boolean.class));
         if (!isValidated) {
             var data = new CustomerResponse("customer %s is not validated".formatted(id),

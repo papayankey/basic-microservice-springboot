@@ -23,8 +23,19 @@ spring:
 #          uri: file:///${user.home}/configrepo
 
   # Fetch configuration from remote git
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          uri: https://github.com/papayankey/configrepo
+
+# Fetch configuration from multiple repositories through pattern matching
   cloud:
     config:
       server:
         git:
           uri: https://github.com/papayankey/configrepo
+          repos:
+            local:
+              pattern: '*-local'
+              uri: file:///${user.home}/configrepo
