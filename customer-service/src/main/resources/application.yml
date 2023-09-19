@@ -7,12 +7,13 @@ spring:
   config:
     import: "optional:configserver:"
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh
-
+# Below configurations now stored in config server
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: refresh
+#
 #logging:
 #  pattern:
 #    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

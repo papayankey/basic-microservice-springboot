@@ -15,7 +15,7 @@ public class ValidationController {
 
     @GetMapping("/{id}")
     public boolean checkValidation(@PathVariable(name = "id") int id) {
-        logger.info("Received request from customer service with id: {}", id);
+        logger.info("Received request to validate customer with id: {}", id);
         var result = validatedCustomers.getOrDefault(id, "");
         return !result.isEmpty();
     }

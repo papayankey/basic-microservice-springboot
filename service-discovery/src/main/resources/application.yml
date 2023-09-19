@@ -5,9 +5,6 @@ spring:
   application:
     name: service-discovery
 
-
-  #     these configurations are now stored in the config server
-
   eureka:
     instance:
       hostname: localhost

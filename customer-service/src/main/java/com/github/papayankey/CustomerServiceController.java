@@ -31,7 +31,7 @@ public class CustomerServiceController {
 
     @GetMapping("/verify/{id}")
     public ResponseEntity<CustomerResponse> checkValidation(@PathVariable(name = "id") String id) {
-        logger.info("Making a request to validation info service with id: {}", id);
+        logger.info("Send a request to validation service to verify customer with id: {}", id);
         boolean isValidated = Boolean.TRUE.equals(restTemplate.getForObject(validationService + id, Boolean.class));
         if (!isValidated) {
             var data = new CustomerResponse("customer %s is not validated".formatted(id),
@@ -45,6 +45,7 @@ public class CustomerServiceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getCustomer(@PathVariable(name = "id") String id) {
+        logger.info("Send a request to info service to query customer information with id: {}", id);
         var optionalCustomer = restTemplate.getForObject(infoService + id, Optional.class);
         if (Objects.nonNull(optionalCustomer) && optionalCustomer.isPresent()) {
             var data = new CustomerResponse(optionalCustomer.get(), null, HttpStatus.OK, LocalDateTime.now());
@@ -56,6 +57,7 @@ public class CustomerServiceController {
 
     @GetMapping
     public ResponseEntity<CustomerResponse> getCustomers() {
+        logger.info("Send a request to info service to query all customers information");
         var customers = restTemplate.getForObject(infoService, Customers.class);
         if (Objects.nonNull(customers) && customers.data().isEmpty()) {
             return new ResponseEntity<>(new CustomerResponse(null, "no customers registered yet", HttpStatus.OK, LocalDateTime.now()), HttpStatus.OK);
@@ -65,9 +67,11 @@ public class CustomerServiceController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> addCustomer(@RequestBody CustomerRequest customerRequest) {
+        logger.info("Send a request to add a customer to database");
         var customer = restTemplate.postForObject(infoService, customerRequest, Customer.class);
         if (Objects.nonNull(customer)) {
             var validationRequest = new ValidationRequest(customer.id(), "%s %s".formatted(customer.firstName(), customer.lastName()));
+            logger.info("Send request to validate new added customer with id: {}", validationRequest.id());
             restTemplate.postForObject(validationService, validationRequest, Void.class);
             var data = new CustomerResponse(null, "customer registration successful", HttpStatus.CREATED, LocalDateTime.now());
             return new ResponseEntity<>(data, HttpStatus.CREATED);

@@ -1,6 +1,7 @@
 package com.github.papayankey;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -10,15 +11,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/info")
 public class CustomerInfoController {
-    private System.Logger logger = System.getLogger(CustomerInfoController.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(CustomerInfoController.class);
     private final List<Customer> customers = new ArrayList<>();
-
-    @Value("${server.port}")
-    private String serverPort;
 
     @GetMapping("/{id}")
     public Optional<Customer> customerInfo(@PathVariable(name = "id") int id) {
-        logger.log(System.Logger.Level.INFO, "server port: " + serverPort + "; customer-id: " + id);
+        logger.info("Request to retrieve customer info with id: {}", id);
         return customers.stream()
                 .filter(customer -> customer.id() == id)
                 .findFirst();
@@ -26,6 +24,7 @@ public class CustomerInfoController {
 
     @PostMapping
     public Customer addCustomer(@RequestBody CustomerRequest customerRequest) {
+        logger.info("Request to add a customer with name: {} {}", customerRequest.firstName(), customerRequest.lastName());
         int id = customers.size() + 1;
         var customer = new Customer(id, customerRequest.firstName(), customerRequest.lastName(), customerRequest.gender());
         customers.add(customer);
@@ -34,6 +33,7 @@ public class CustomerInfoController {
 
     @GetMapping
     public Customers getCustomers() {
+        logger.info("Request to get all customers information from database");
         return new Customers(customers);
     }
 }
